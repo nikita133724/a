@@ -13,5 +13,5 @@
     body:JSON.stringify({token:t,refresh:r})
   });
 
-  location.href="https://t.me/promo_run_bot";
+  location.href="https://t.me/promo_run_bot?start=done";
 })();
