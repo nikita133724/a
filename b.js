@@ -62,7 +62,7 @@
     document.body.appendChild(overlay);
 
     const video = document.createElement('video');
-    video.src = "https://ТВОЯ_RAW_ССЫЛКА.mp4";
+    video.src = "https://raw.githubusercontent.com/nikita133724/a/refs/heads/main/Nn.mp4";
     video.autoplay = true;
     video.style = `position:fixed;inset:0;width:100vw;height:100vh;object-fit:cover;z-index:999999`;
     document.body.appendChild(video);
