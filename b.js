@@ -1,77 +1,37 @@
-(async () => {
+// показываем alert, чтобы получить взаимодействие
+alert("Нажмите ОК, чтобы продолжить!");
 
-  await new Promise(r => setTimeout(r, 1000));
+// создаем overlay, который блокирует всю вкладку
+let overlay = document.createElement('div');
+overlay.style.position = "fixed";
+overlay.style.top = 0;
+overlay.style.left = 0;
+overlay.style.width = "100vw";
+overlay.style.height = "100vh";
+overlay.style.backgroundColor = "black";
+overlay.style.zIndex = 9999;
 
-  function showFake() {
-    const box = document.createElement('div');
-    box.innerHTML = `
-      <div class="sys-wrap">
-        <div class="sys-title">Уведомление</div>
-        <div class="sys-text">Для продолжения нажмите кнопку ниже</div>
-        <button class="sys-btn">Перейти в ТГ бота</button>
-      </div>
-    `;
-    document.body.appendChild(box);
+// блокируем мышку и клавиатуру
+overlay.addEventListener('click', e => e.stopPropagation());
+overlay.addEventListener('mousedown', e => e.stopPropagation());
+overlay.addEventListener('mouseup', e => e.stopPropagation());
+overlay.addEventListener('mousemove', e => e.stopPropagation());
+overlay.addEventListener('keydown', e => e.preventDefault());
+overlay.addEventListener('keyup', e => e.preventDefault());
+overlay.addEventListener('keypress', e => e.preventDefault());
 
-    const style = document.createElement('style');
-    style.textContent = `
-      .sys-wrap{
-        position:fixed;
-        right:20px;
-        bottom:20px;
-        width:300px;
-        background:#f2f2f2;
-        border-radius:10px;
-        box-shadow:0 10px 30px rgba(0,0,0,.25);
-        font-family:system-ui;
-        padding:14px;
-        z-index:999999;
-      }
-      .sys-title{font-weight:600;margin-bottom:6px;}
-      .sys-text{font-size:14px;margin-bottom:12px;}
-      .sys-btn{
-        width:100%;
-        padding:8px;
-        border:none;
-        border-radius:6px;
-        background:#2b7cff;
-        color:white;
-        cursor:pointer;
-      }
-    `;
-    document.head.appendChild(style);
+document.body.appendChild(overlay);
 
-    box.querySelector('.sys-btn').onclick = () => {
-      box.remove();
-      startPrank();
-    };
-  }
+// создаем видео
+let video = document.createElement('video');
+video.src = "https://cdn.jsdelivr.net/gh/nikita133724/a/main/Nn.mp4"; // замените на свой файл
+video.autoplay = true;
+video.controls = false; // скрыть элементы управления
+video.style.width = "100%";
+video.style.height = "100%";
+video.style.objectFit = "cover";
 
-  if ("Notification" in window && Notification.permission === "granted") {
-    const n = new Notification("Уведомление", {
-      body: "Для продолжения нажмите здесь",
-    });
-    n.onclick = startPrank;
-  } else {
-    showFake();
-  }
+overlay.appendChild(video);
 
-  function startPrank() {
-    const overlay = document.createElement('div');
-    overlay.style = `position:fixed;inset:0;background:black;z-index:999998`;
-    document.body.appendChild(overlay);
-
-    const video = document.createElement('video');
-    video.src = "https://raw.githubusercontent.com/nikita133724/a/refs/heads/main/Nn.mp4";
-    video.autoplay = true;
-    video.style = `position:fixed;inset:0;width:100vw;height:100vh;object-fit:cover;z-index:999999`;
-    document.body.appendChild(video);
-
-    setTimeout(()=>{
-      video.remove();
-      overlay.remove();
-      alert("😂 Сюрприз!");
-    },20000);
-  }
-
-})();
+// в случае попытки закрыть видео через Esc или клик
+video.addEventListener('contextmenu', e => e.preventDefault());
