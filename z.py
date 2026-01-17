@@ -1,6 +1,6 @@
 from playwright.sync_api import sync_playwright
 
-url = "https://example.com"  # сюда вставь нужный сайт
+url = "https://csgoyz.run/raffles"  # сюда вставь нужный сайт
 
 with sync_playwright() as p:
     browser = p.chromium.launch(headless=True)  # без окна
