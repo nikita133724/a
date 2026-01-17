@@ -1,24 +1,32 @@
-import asyncio
-from pyppeteer import launch
 from pathlib import Path
+from playwright.sync_api import sync_playwright
+import subprocess
 
 URL = "https://csgoyz.run/raffles"
 OUT_FILE = Path("raffles_dom.html")
 
-async def main():
-    # Запускаем headless браузер
-    browser = await launch(headless=True, args=["--no-sandbox", "--disable-setuid-sandbox"])
-    page = await browser.newPage()
-    
-    print(f"[INFO] Opening {URL} ...")
-    await page.goto(URL, waitUntil='networkidle2')  # ждем пока JS загрузится
-    await page.waitForTimeout(3000)  # дополнительные 3 секунды на загрузку динамики
-    
-    html = await page.content()
-    OUT_FILE.write_text(html, encoding="utf-8")
-    print(f"[OK] HTML saved to {OUT_FILE.resolve()}")
-    
-    await browser.close()
+# Минимальные зависимости для Codespaces
+subprocess.run(["sudo", "apt", "update"], check=True)
+subprocess.run([
+    "sudo", "apt", "install", "-y",
+    "libnss3", "libatk1.0-0", "libatk-bridge2.0-0", "libcups2",
+    "libdrm2", "libxkbcommon0", "libxcomposite1", "libxdamage1",
+    "libxrandr2", "libgbm1", "libpango-1.0-0", "libpangocairo-1.0-0",
+    "libx11-6", "libxext6", "libxfixes3", "libxrender1", "libxcb1",
+    "libxcb-shm0", "libxcb-dri2-0", "libgtk-3-0", "libasound2"
+], check=False)
 
-# Запуск
-asyncio.get_event_loop().run_until_complete(main())
+# Устанавливаем playwright
+subprocess.run(["python3", "-m", "pip", "install", "--upgrade", "pip"], check=True)
+subprocess.run(["python3", "-m", "pip", "install", "playwright"], check=True)
+subprocess.run(["python3", "-m", "playwright", "install", "chromium"], check=True)
+
+# Headless fetch
+with sync_playwright() as p:
+    browser = p.chromium.launch(headless=True, args=["--no-sandbox", "--disable-dev-shm-usage"])
+    page = browser.new_page()
+    page.goto(URL, wait_until="networkidle")
+    page.wait_for_timeout(5000)
+    OUT_FILE.write_text(page.content(), encoding="utf-8")
+    print(f"[OK] HTML saved to {OUT_FILE.resolve()}")
+    browser.close()
