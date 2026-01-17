@@ -6,13 +6,19 @@ URL = "https://csgoyz.run/raffles"
 OUT_FILE = Path("raffles_dom.html")
 
 async def main():
-    browser = await launch(headless=True)
+    # Запускаем headless браузер
+    browser = await launch(headless=True, args=["--no-sandbox", "--disable-setuid-sandbox"])
     page = await browser.newPage()
-    await page.goto(URL)
-    await page.waitForTimeout(5000)
+    
+    print(f"[INFO] Opening {URL} ...")
+    await page.goto(URL, waitUntil='networkidle2')  # ждем пока JS загрузится
+    await page.waitForTimeout(3000)  # дополнительные 3 секунды на загрузку динамики
+    
     html = await page.content()
     OUT_FILE.write_text(html, encoding="utf-8")
-    await browser.close()
     print(f"[OK] HTML saved to {OUT_FILE.resolve()}")
+    
+    await browser.close()
 
-asyncio.run(main())
+# Запуск
+asyncio.get_event_loop().run_until_complete(main())
