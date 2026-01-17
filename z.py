@@ -1,15 +1,18 @@
-
-from playwright.sync_api import sync_playwright
 import os
+from requests_html import HTMLSession
 
+# Берём URL из переменной окружения или ставим дефолт
 url = os.environ.get("TARGET_URL", "https://csgoyz.run/raffles")
 
-with sync_playwright() as p:
-    browser = p.chromium.launch(headless=True)
-    page = browser.new_page()
-    page.goto(url, wait_until="networkidle")
-    page.wait_for_timeout(5000)  # ждём 5 секунд для выполнения JS
-    html = page.content()
-    browser.close()
+session = HTMLSession()
 
-print("[HTML]:", html)
+print(f"[INFO]: Открываем {url}")
+
+# Получаем страницу
+r = session.get(url)
+
+# Рендерим JS (по умолчанию timeout=8 секунд, можно увеличить)
+r.html.render(timeout=20)  
+
+# Выводим финальный HTML в логи Render
+print("[HTML]:", r.html.html)
