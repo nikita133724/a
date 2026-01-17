@@ -1,17 +1,12 @@
 from playwright.sync_api import sync_playwright
 
+url = "https://example.com"  # сюда вставь нужный сайт
+
 with sync_playwright() as p:
-    # Запускаем Chromium без UI (headless)
-    browser = p.chromium.launch(headless=True)
+    browser = p.chromium.launch(headless=True)  # без окна
     page = browser.new_page()
-
-    url = "https://csgoyz.run/raffles"
-    page.goto(url, wait_until="networkidle")  # Ждём рендер JS
-
-    # Сохраняем HTML в файл
-    html = page.content()
-    with open("page.html", "w", encoding="utf-8") as f:
-        f.write(html)
-
+    page.goto(url, wait_until="networkidle")  # ждём выполнения JS
+    html = page.content()  # финальный HTML
     browser.close()
-    print("HTML сохранён в page.html")
+
+print(html)  # выводим HTML в логи
